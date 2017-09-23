@@ -77,6 +77,7 @@ TVector<ValType>::~TVector()
 template <class ValType> // доступ
 ValType& TVector<ValType>::operator[](int pos)
 {
+	
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сравнение
@@ -117,6 +118,7 @@ TVector<ValType> TVector<ValType>::operator+(const TVector<ValType> &v)
 template <class ValType> // вычитание
 TVector<ValType> TVector<ValType>::operator-(const TVector<ValType> &v)
 {
+	return *this;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // скалярное произведение
