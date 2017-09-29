@@ -69,15 +69,13 @@ TVector<ValType>::TVector(int s, int si)
 template <class ValType> //конструктор копирования
 TVector<ValType>::TVector(const TVector<ValType> &v)
 {
-	TVector<ValType>::TVector(int v.Size, int v.StartIndex); //проверить
-	if (Size != v.Size)
+	Size = v.Size;
+	StartIndex = v.StartIndex;
+	pVector = new ValType[Size];
+	
+	for (int i=0; i < Size; i++)
 	{
-		Size = v.Size;
-		StartIndex = v.StartIndex;
-	}
-	for (int i=0; i < size; i++)
-	{
-		pVector[i] = v.pVector;
+		pVector[i] = v.pVector[i];
 	}
 } /*Проверяем размер. Если не совпадают, выравневаем размер и передаем начальный индекс. Затем идем по элементам и передаем значения элементов */
 
@@ -124,7 +122,7 @@ bool TVector<ValType>::operator!=(const TVector &v) const
 			
 			if (v.pVector[i] == pVector) i++;
 			else return true;
-			prefetch(pVector[i]);
+			
 		}
 		return false;
 	}
@@ -134,18 +132,18 @@ bool TVector<ValType>::operator!=(const TVector &v) const
 template <class ValType> // присваивание
 TVector<ValType>& TVector<ValType>::operator=(const TVector &v)
 {
-	if (Size != v.Size)
-	{
-		Size = v.Size;
-		StartIndex = v.StartIndex;
-	}
-	for (int i = 0; i < size; i++)
-	{
-		pVector[i] = v.pVector;
-	}
-	return *this;
-} /*-------------------------------------------------------------------------*/
 
+
+
+	Size = v.Size;
+	StartIndex = v.StartIndex;
+	for (int i = 0; i < Size; i++)
+	{
+		pVector[i] = v.pVector[i];
+	
+	return *this;
+
+} 
 template <class ValType> // прибавить скаляр
 TVector<ValType> TVector<ValType>::operator+(const ValType &val)
 {
@@ -179,19 +177,36 @@ TVector<ValType> TVector<ValType>::operator*(const ValType &val)
 template <class ValType> // сложение
 TVector<ValType> TVector<ValType>::operator+(const TVector<ValType> &v)
 {
-	for (int i; i < Size; i++)
+	if (Size != v.Size)
 	{
-		pVector[i] += v.pVector[i];
+		cout << "Извините. Матрицы, которые вы складываете, разных размеров \n";
+
+	}
+	else
+	{
+		for (int i; i < Size; i++)
+		{
+			pVector[i] += v.pVector[i];
+		}
 	}
 	return *this;
+	
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // вычитание
 TVector<ValType> TVector<ValType>::operator-(const TVector<ValType> &v)
 {
-	for (int i; i < Size; i++)
+	if (Size != v.Size)
 	{
-		pVector[i] -= v.pVector[i];
+		cout << "Извините. Матрицы, которые вы вычитаете, разных размеров \n";
+
+	}
+	else
+	{
+		for (int i; i < Size; i++)
+		{
+			pVector[i] -= v.pVector[i];
+		}
 	}
 	return *this;
 } /*-------------------------------------------------------------------------*/
@@ -199,6 +214,20 @@ TVector<ValType> TVector<ValType>::operator-(const TVector<ValType> &v)
 template <class ValType> // скалярное произведение
 ValType TVector<ValType>::operator*(const TVector<ValType> &v)
 {
+	if (Size != v.Size)
+	{
+		cout << "Извините. Матрицы, которые вы пытаетесь умножить, разных размеров \n";
+		return 0;
+	}
+	else
+	{
+		ValType s; // мб лучше с нью сделать
+		for (int i = 0; i < Size; i++)
+		{
+			s = pVector[i] + v.pVector[i];
+		}
+		return s;
+	}
 } /*-------------------------------------------------------------------------*/
 
 
@@ -234,40 +263,93 @@ public:
 template <class ValType>
 TMatrix<ValType>::TMatrix(int s): TVector<TVector<ValType> >(s)
 {
+	Size = s;
+	TVector<TVector<ValType>>(Size);
+	for (int i = 0; i < s; i++)
+	{
+		TVector<ValType> tmp(s - i, i);
+		pVector[i] = tmp;
+	}
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // конструктор копирования
 TMatrix<ValType>::TMatrix(const TMatrix<ValType> &mt):
-  TVector<TVector<ValType> >(mt) {}
+  TVector<TVector<ValType> >(mt) 
+{
+	Size = mt.Size;
+	for (int i = 0; i < Size;i++)	pVector[i] = mt.pVector[i];
+}
 
 template <class ValType> // конструктор преобразования типа
 TMatrix<ValType>::TMatrix(const TVector<TVector<ValType> > &mt):
-  TVector<TVector<ValType> >(mt) {}
+  TVector<TVector<ValType> >(mt) 
+{
+	Size = mt.Size;
+	for (int i = 0; i < Size; i++)
+	{
+		
+	}
+}
 
 template <class ValType> // сравнение
 bool TMatrix<ValType>::operator==(const TMatrix<ValType> &mt) const
 {
-	
+	if (Size != mt.Size) return false;
+	else
+	{
+		for (int i = 0; i < Size; i++)
+		{
+			if (pVector[i] != mt.pVector[i]) return false;
+		}
+		return true;
+	}
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сравнение
 bool TMatrix<ValType>::operator!=(const TMatrix<ValType> &mt) const
-{
-} /*-------------------------------------------------------------------------*/
 
+{
+	if (Size != mt.Size) return true;
+	else
+	{
+		for (int i = 0; i < Size; i++)
+		{
+			if (pVector[i] != mt.pVector[i]) return true;
+		}
+		return false;
+	} /*-------------------------------------------------------------------------*/
+}
 template <class ValType> // присваивание
 TMatrix<ValType>& TMatrix<ValType>::operator=(const TMatrix<ValType> &mt)
 {
+	Size = mt.Size;
+	for (int i = 0; i < Size; i++)
+	{
+		pVector[i] = mt.pVector[i];
+	}
+	return *this;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сложение
 TMatrix<ValType> TMatrix<ValType>::operator+(const TMatrix<ValType> &mt)
 {
+	Size = mt.Size;
+	for (int i = 0; i < Size; i++)
+	{
+		pVector[i] = pVector[i] + mt.pVector[i];
+	}
+	return *this;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // вычитание
 TMatrix<ValType> TMatrix<ValType>::operator-(const TMatrix<ValType> &mt)
 {
+	Size = mt.Size;
+	for (int i = 0; i < Size; i++)
+	{
+		pVector[i] = pVector[i]- mt.pVector[i];
+	}
+	return *this;
 } /*-------------------------------------------------------------------------*/
 
 // TVector О3 Л2 П4 С6
