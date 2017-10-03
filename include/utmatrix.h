@@ -194,7 +194,6 @@ TVector<ValType> TVector<ValType>::operator+(const TVector<ValType> &v)
 		for (int i = 0; i < Size; i++)
 		{
 			tmp[i] = pVector[i] + v.pVector[i];
-			cout << tmp[i] << endl << pVector[i] << endl << v.pVector[i] << endl;
 		}
 		
 		return tmp;
@@ -333,13 +332,12 @@ TMatrix<ValType>& TMatrix<ValType>::operator=(const TMatrix<ValType> &mt)
 template <class ValType> // сложение
 TMatrix<ValType> TMatrix<ValType>::operator+(const TMatrix<ValType> &mt)
 {
-
-	Size = mt.Size;
+	TMatrix<ValType> tmp(mt.Size);
 	for (int i = 0; i < Size; i++)
 	{
-		pVector[i] = pVector[i] + mt.pVector[i];
+	tmp[i] = pVector[i] + mt.pVector[i];
 	}
-	return *this;
+	return tmp;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // вычитание
