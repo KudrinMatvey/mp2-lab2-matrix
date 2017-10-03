@@ -185,17 +185,21 @@ TVector<ValType> TVector<ValType>::operator+(const TVector<ValType> &v)
 {
 	if (Size != v.Size)
 	{
-		cout << "Извините. Матрицы, которые вы складываете, разных размеров \n";
-
+		cout << "Извините. Векторы, которые вы складываете, разных размеров \n";
+		return *this;
 	}
 	else
 	{
+		TVector<ValType> tmp(v.Size);
 		for (int i = 0; i < Size; i++)
 		{
-			pVector[i] = pVector[i] + v.pVector[i];
+			tmp[i] = pVector[i] + v.pVector[i];
+			cout << tmp[i] << endl << pVector[i] << endl << v.pVector[i] << endl;
 		}
+		
+		return tmp;
 	}
-	return *this;
+	
 	
 } /*-------------------------------------------------------------------------*/
 
@@ -204,7 +208,7 @@ TVector<ValType> TVector<ValType>::operator-(const TVector<ValType> &v)
 {
 	if (Size != v.Size)
 	{
-		cout << "Извините. Матрицы, которые вы вычитаете, разных размеров \n";
+		cout << "Извините. Векторы, которые вы вычитаете, разных размеров \n";
 
 	}
 	else
@@ -224,7 +228,7 @@ ValType TVector<ValType>::operator*(const TVector<ValType> &v)
 {
 	if (Size != v.Size)
 	{
-		cout << "Извините. Матрицы, которые вы пытаетесь умножить, разных размеров \n";
+		cout << "Извините. Векторы, которые вы пытаетесь умножить, разных размеров \n";
 		return 0;
 	}
 	else
